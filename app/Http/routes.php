@@ -14,7 +14,13 @@
 Route::get('/', function () {
     return view('welcome');
 });
+//Route::get('/', 'FrontController@index');
+Route::get('/menu', 'FrontController@menu');
+Route::get('/registro', 'FrontController@registro');
+
 
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
+Route::resource('registroUniversitario', ' UniversitarioController');
+
