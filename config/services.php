@@ -38,5 +38,19 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+    /*
+    Aqui van nuestras credenciales de las api para poder conectarnos con faccebook o google
+    */
+    'facebook' => [
+    'client_id' => '',
+    'client_secret' => '',
+    'redirect' => 'http://localhost/tutorial-laravel/public/social/callback/facebook',
+    ],
+
+    'google' => [
+    'client_id' => '',
+    'client_secret' => '',
+    'redirect' => 'http://localhost/tutorial-laravel/public/social/callback/google',
+    ],
 
 ];
