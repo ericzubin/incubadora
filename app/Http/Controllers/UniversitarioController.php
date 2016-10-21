@@ -6,90 +6,80 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Mail;
+use App\Alumno;
+use View;
+use Auth;
+use Session;
+use Illuminate\Support\Facades\Input;
+
+
 
 class UniversitarioController extends Controller
 {
-    	public function index()
-	{
-		     //Select all records from books table via Book method
-		$allBooks = Alumno::all();    //Eloquent ORM method to return all matching results
-        
-        //Redirecting to bookList.blade.php with $allBooks       
-        return View('books.bookList', compact('allBooks'));
-
-
+      public function index()
+    {
+ 		$alumnos = Alumno::all();    //Eloquent ORM method to return all matching results
+        // load the view and pass the nerds
+        return View::make('universitarios.index')
+            ->with('alumnos', $alumnos);
     }
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-        //Redirecting to addBook.blade.php 
-		return view('universitarios.addUniversitario');
-	}
+    public function create()
+    {
+             
+                return View::make('universitarios.create');  
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store(PublishBookRequest $requestData)
-	{
-        //Insert Query
-        $book = new Alumno;
-        $book->title= $requestData['title'];
-        $book->description= $requestData['description'];
-        $book->author= $requestData['author'];
-        $book->save();
+ 
+}
 
-        //Send control to index() method where it'll redirect to bookList.blade.php
-        
-        //Mail::send('emails.welcome', $data, function ($message) {
+public function store(Request $request)
+{
+    try
+        {
 
-        Mail::raw('Text to e-mail', function ($message) {
-          $message->from('us@example.com', 'Laravel');
 
-          $message->to('foo@example.com')->cc('bar@example.com');
-        });
-        return redirect()->route('book.index');
-	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
+$input = $request->all();    
+Alumno::create($input);
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
+    Session::flash('flash_message', 'Pantalla agregada correctamente');
 
+    return redirect()->back();
+        }
+         catch (FormValidationException $e)
+        {
+            // Failed.
+            return Redirect::back()->withInput()->withErrors($e->getErrors());
+        }
+}
+
+   public function edit($id)
+    {
+        // get the nerd
+        $alumno = Alumno::find($id);
+
+        // show the edit form and pass the nerd
+        return View::make('universitarios.edit')
+            ->with('alumno', $alumno);
+    }
+
+   /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show($id)
+    {
+  
+		        $alumno = Alumno::find($id);
+
+        // show the view and pass the nerd to it
+        return View::make('universitarios.show')
+            ->with('alumno', $alumno);
+    }
+  
 	/**
 	 * Remove the specified resource from storage.
 	 *
@@ -98,6 +88,47 @@ class UniversitarioController extends Controller
 	 */
 	public function destroy($id)
 	{
-		//
-	}
-}
+		 
+        Alumno::find($id)->delete();
+
+        Session::flash('message', 'Se borro con exito este alumno');
+        //Redirecting to index() method
+        return redirect()->route('universitarios.index');	
+    }
+
+     /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function update($id,Request $request)
+    {
+  
+   try
+        {
+                    // store
+            $alumno = Alumno::find($id);
+            $alumno->nombre       = $request->input('nombre');
+            $alumno->email      = $request->input('email');
+            $alumno->telefono = $request->input('telefono');
+            $alumno->carrera = $request->input('carrera');
+            $alumno->interes = $request->input('interes');
+
+            $alumno->save();
+
+            // redirect
+            Session::flash('message', 'Se modifico correctamente los datos del alumno');
+            return redirect()->route('universitario.index');	
+        }
+
+         catch (FormValidationException $e)
+        {
+            // Failed.
+            return Redirect::back()->withInput()->withErrors($e->getErrors());
+        }      
+    }
+ 
+    }
+
+///https://scotch.io/tutorials/simple-laravel-crud-with-resource-controllers

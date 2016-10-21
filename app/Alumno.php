@@ -8,12 +8,13 @@ class Alumno extends Model
 {
     protected $table = 'alumnos';
 	protected $fillable = [
-        'name',
+        'id',
+        'nombre',
         'email',
-        'telefono'
-         'carrera'
-        'interes'
-        'sexo'
+        'telefono',
+        'carrera',
+        'interes',
+        'sexo',
 
 
     ];}
